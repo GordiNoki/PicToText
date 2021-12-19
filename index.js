@@ -72,7 +72,7 @@ ImageInput.onchange = (ev) => {
     image.src = URL.createObjectURL(ev.target.files[0]);
     image.crossOrigin = "anonymous"
     image.onload = () => {
-        PictureCtx.drawImage(image, 0, 0)
+        PictureCtx.drawImage(image, 0, 0, w, h)
         function getData(data, x, y) {
             if (x < 0 || x > w - 1) return 255
             if (y < 0 || y > h - 1) return 255
@@ -144,16 +144,16 @@ ImageInput.onchange = (ev) => {
                 LinesCtx.fillRect(x, y, 1, 1)
             }
         }
-        var power = window.document.getElementById("power").value
+        var power = window.document.getElementById("power")
         var isLines = window.document.getElementById("UseLine").checked
         var data = (isLines ? LinesCtx : GrayCtx).getImageData(0, 0, w, h).data.filter((_, i) => i % 4 == 0)
         for (var x = 0; x < w; x++) {
             for (var y = 0; y < h; y++) {
                 a = (x + (y * w))
                 if (isLines) {
-                    MonoCtx.fillStyle = parseInt(data[a]) > 255 / power ? "#000" : "#FFF"
+                    MonoCtx.fillStyle = parseInt(data[a]) > 255 / ((power.max+power.min) - power.value) ? "#000" : "#FFF"
                 } else {
-                    MonoCtx.fillStyle = parseInt(data[a]) > 255 / power ? "#FFF" : "#000"
+                    MonoCtx.fillStyle = parseInt(data[a]) > 255 / power.value ? "#FFF" : "#000"
                 }
                 MonoCtx.fillRect(x, y, 1, 1)
             }
