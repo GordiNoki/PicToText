@@ -1,9 +1,18 @@
 // should make pics 60x60 tho
 
-var PictureCtx = window.document.getElementById("Picture").getContext("2d");
-var GrayCtx = window.document.getElementById("Gray").getContext("2d");
-var LinesCtx = window.document.getElementById("Lines").getContext("2d");
-var MonoCtx = window.document.getElementById("Mono").getContext("2d");
+var canvases = {
+    Picture: window.document.createElement("canvas"),
+    Gray: window.document.createElement("canvas"),
+    Lines: window.document.createElement("canvas"),
+    Mono: window.document.createElement("canvas")
+}
+
+Object.values(canvases).forEach(canv => { canv.height = 60; canv.width = 60 })
+
+var PictureCtx = canvases.Picture.getContext("2d");
+var GrayCtx = canvases.Gray.getContext("2d");
+var LinesCtx = canvases.Lines.getContext("2d");
+var MonoCtx = canvases.Mono.getContext("2d");
 
 var w = PictureCtx.canvas.width;
 var h = PictureCtx.canvas.height;
@@ -24,19 +33,23 @@ window.document.getElementById("UseLine").onclick = (ev) => {
     }
 }
 
-window.document.getElementById("power").onchange = (ev) => {
-    var power = window.document.getElementById("power").value
+window.document.getElementById("power").oninput = (ev) => {
+    var power = ev.target
     var isLines = window.document.getElementById("UseLine").checked
     var data = (isLines ? LinesCtx : GrayCtx).getImageData(0, 0, w, h).data.filter((_, i) => i % 4 == 0)
     for (var x = 0; x < w; x++) {
         for (var y = 0; y < h; y++) {
             a = (x + (y * w))
+            var fStyle;
             if (isLines) {
-                MonoCtx.fillStyle = parseInt(data[a]) > 255 / power ? "#000" : "#FFF"
+                fStyle = parseInt(data[a]) > 255 / ((power.max + power.min) - power.value) ? "#000" : "#FFF"
             } else {
-                MonoCtx.fillStyle = parseInt(data[a]) > 255 / power ? "#FFF" : "#000"
+                fStyle = parseInt(data[a]) > 255 / power.value ? "#FFF" : "#000"
             }
+            MonoCtx.fillStyle = fStyle
             MonoCtx.fillRect(x, y, 1, 1)
+            MonoPreview.getContext("2d").fillStyle = fStyle
+            MonoPreview.getContext("2d").fillRect(x * 2, y * 2, 2, 2)
         }
     }
 }
@@ -72,6 +85,7 @@ ImageInput.onchange = (ev) => {
     image.src = URL.createObjectURL(ev.target.files[0]);
     image.crossOrigin = "anonymous"
     image.onload = () => {
+        PicturePreview.getContext("2d").drawImage(image, 0, 0, 120, 120)
         PictureCtx.drawImage(image, 0, 0, w, h)
         function getData(data, x, y) {
             if (x < 0 || x > w - 1) return 255
@@ -150,12 +164,16 @@ ImageInput.onchange = (ev) => {
         for (var x = 0; x < w; x++) {
             for (var y = 0; y < h; y++) {
                 a = (x + (y * w))
+                var fStyle;
                 if (isLines) {
-                    MonoCtx.fillStyle = parseInt(data[a]) > 255 / ((power.max+power.min) - power.value) ? "#000" : "#FFF"
+                    fStyle = parseInt(data[a]) > 255 / ((power.max + power.min) - power.value) ? "#000" : "#FFF"
                 } else {
-                    MonoCtx.fillStyle = parseInt(data[a]) > 255 / power.value ? "#FFF" : "#000"
+                    fStyle = parseInt(data[a]) > 255 / power.value ? "#FFF" : "#000"
                 }
+                MonoCtx.fillStyle = fStyle
                 MonoCtx.fillRect(x, y, 1, 1)
+                MonoPreview.getContext("2d").fillStyle = fStyle
+                MonoPreview.getContext("2d").fillRect(x * 2, y * 2, 2, 2)
             }
         }
     }
