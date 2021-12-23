@@ -40,11 +40,13 @@ window.document.getElementById("power").oninput = (ev) => {
     for (var x = 0; x < w; x++) {
         for (var y = 0; y < h; y++) {
             a = (x + (y * w))
+            c1 = InvertColor.checked ? "#000" : "#FFF"
+            c2 = InvertColor.checked ? "#FFF" : "#000"
             var fStyle;
             if (isLines) {
-                fStyle = parseInt(data[a]) > 255 / ((power.max + power.min) - power.value) ? "#000" : "#FFF"
+                fStyle = parseInt(data[a]) > 255 / power.value ? c2 : c1
             } else {
-                fStyle = parseInt(data[a]) > 255 / power.value ? "#FFF" : "#000"
+                fStyle = parseInt(data[a]) > 255 / power.value ? c1 : c2
             }
             MonoCtx.fillStyle = fStyle
             MonoCtx.fillRect(x, y, 1, 1)
@@ -164,11 +166,13 @@ ImageInput.onchange = (ev) => {
         for (var x = 0; x < w; x++) {
             for (var y = 0; y < h; y++) {
                 a = (x + (y * w))
+                c1 = InvertColor.checked ? "#000" : "#FFF"
+                c2 = InvertColor.checked ? "#FFF" : "#000"
                 var fStyle;
                 if (isLines) {
-                    fStyle = parseInt(data[a]) > 255 / ((power.max + power.min) - power.value) ? "#000" : "#FFF"
+                    fStyle = parseInt(data[a]) > 255 / power.value ? c2 : c1
                 } else {
-                    fStyle = parseInt(data[a]) > 255 / power.value ? "#FFF" : "#000"
+                    fStyle = parseInt(data[a]) > 255 / power.value ? c1 : c2
                 }
                 MonoCtx.fillStyle = fStyle
                 MonoCtx.fillRect(x, y, 1, 1)
